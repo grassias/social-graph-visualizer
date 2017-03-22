@@ -3,5 +3,8 @@
   "version": "0.0.1",
   "description": "A simple demo page.",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
 }
