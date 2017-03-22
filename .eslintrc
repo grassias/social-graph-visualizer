@@ -1,0 +1,21 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "rules": {
+    "strict": ["error", "global"],
+    "indent": [1, 2, {"SwitchCase": 1}],
+    "linebreak-style": [1, "unix"],
+    "no-unused-vars": 1,
+    "no-console": "off",
+    "no-undef": 1
+  }
+}
