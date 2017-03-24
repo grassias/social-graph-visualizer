@@ -10,29 +10,30 @@
     "lint": "eslint src",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development rollup -c -i src/index.js -o dist/sgv.js",
+    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development webpack -c -i src/index.js -o dist/sgv.js",
     "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -i src/index.js -o dist/sgv.min.js",
     "build": "yarn run build:commonjs && yarn run build:es && yarn run build:umd && yarn run build:umd:min",
     "examples:prepare": "yarn run build:umd",
     "examples:run": "ncp dist/ examples/simple/public/",
     "examples:test": "yarn run examples:prepare && yarn run examples:run",
-    "dev:start": "nodemon examples/simple/server.js"
+    "dev:start": "webpack-dev-server --progress --hot --host 0.0.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-core": "^6.24.0",
     "babel-eslint": "^7.2.0",
     "babel-jest": "^19.0.0",
+    "babel-loader": "^6.4.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-0": "^6.22.0",
     "babel-register": "^6.24.0",
     "cross-env": "^3.2.4",
     "eslint": "^3.18.0",
     "ncp": "^2.0.0",
     "nodemon": "^1.11.0",
-    "rollup": "^0.41.6",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-replace": "^1.1.1",
-    "rollup-plugin-uglify": "^1.0.1"
+    "webpack": "^2.3.1",
+    "webpack-dev-server": "^2.4.2"
   },
   "dependencies": {
     "d3": "^4.7.3"
