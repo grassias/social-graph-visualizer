@@ -10,13 +10,11 @@
     "lint": "eslint src",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development webpack -c -i src/index.js -o dist/sgv.js",
-    "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -i src/index.js -o dist/sgv.min.js",
+    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development webpack --env=dev --progress --profile --colors",
+    "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production webpack --env=prod --progress --profile --colors",
     "build": "yarn run build:commonjs && yarn run build:es && yarn run build:umd && yarn run build:umd:min",
-    "examples:prepare": "yarn run build:umd",
-    "examples:run": "ncp dist/ examples/simple/public/",
-    "examples:test": "yarn run examples:prepare && yarn run examples:run",
-    "dev:start": "webpack-dev-server --progress --hot --host 0.0.0.0"
+    "clean": "rimraf lib dist es coverage",
+    "dev:start": "webpack-dev-server --env=dev --progress --hot --host 0.0.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
@@ -30,8 +28,10 @@
     "babel-register": "^6.24.0",
     "cross-env": "^3.2.4",
     "eslint": "^3.18.0",
+    "jest": "^19.0.2",
     "ncp": "^2.0.0",
     "nodemon": "^1.11.0",
+    "rimraf": "^2.6.1",
     "webpack": "^2.3.1",
     "webpack-dev-server": "^2.4.2"
   },
