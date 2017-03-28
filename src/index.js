@@ -1,55 +1,52 @@
-import * as d3 from 'd3';
+import * as d3 from 'd3'
 
-function SocialGraphVisualizer(options = {}) {
-  
+function SocialGraphVisualizer (options = {}) {
   if (!options.selector) {
-    throw new Error('You did not supply any element to draw on.');
+    throw new Error('You did not supply any element to draw on.')
   }
-  
-  this.parentEl = d3.select(options.selector);
+
+  this.parentEl = d3.select(options.selector)
   if (!this.parentEl) {
-    throw new Error('The element you supplied does not exist.');
+    throw new Error('The element you supplied does not exist.')
   }
   this.parentEl
     .append('svg')
-    //responsive SVG needs these 2 attributes and no width and height attr
+    // responsive SVG needs these 2 attributes and no width and height attr
     .attr('preserveAspectRatio', 'xMidYMid meet')
     .attr('viewBox', `0 0 ${this.parentEl._groups[0][0].clientWidth} ${this.parentEl._groups[0][0].clientHeight}`)
 
-  this.svg = d3.select('svg');
+  this.svg = d3.select('svg')
 
   if (!options.graph) {
-    throw new Error('You did not supply any graph object to render.');
+    throw new Error('You did not supply any graph object to render.')
   }
 
-  this.graph = options.graph;
-
+  this.graph = options.graph
 }
 
 SocialGraphVisualizer.prototype.render = function () {
-
-  var color = d3.scaleOrdinal(d3.schemeCategory20);
+  var color = d3.scaleOrdinal(d3.schemeCategory20)
 
   var simulation = d3.forceSimulation()
-		.force('link', d3.forceLink().id(d => d.id))
-		.force('charge', d3.forceManyBody())
-		.force('center', d3.forceCenter(this.svg._groups[0][0].clientWidth / 2, this.svg._groups[0][0].clientHeight / 2));
+    .force('link', d3.forceLink().id(d => d.id))
+    .force('charge', d3.forceManyBody())
+    .force('center', d3.forceCenter(this.svg._groups[0][0].clientWidth / 2, this.svg._groups[0][0].clientHeight / 2))
 
   var link = this.svg
     .append('g')
     .attr('class', 'links')
-		.selectAll('line')
-		.data(this.graph.links)
-		.enter()
+    .selectAll('line')
+    .data(this.graph.links)
+    .enter()
     .append('line')
-		.attr('stroke-width', d => Math.sqrt(d.value));
+    .attr('stroke-width', d => Math.sqrt(d.value))
 
   var node = this.svg
     .append('g')
     .attr('class', 'nodes')
-		.selectAll('circle')
-		.data(this.graph.nodes)
-		.enter()
+    .selectAll('circle')
+    .data(this.graph.nodes)
+    .enter()
     .append('circle')
     .attr('r', 5)
     .attr('fill', d => color(d.group))
@@ -57,48 +54,47 @@ SocialGraphVisualizer.prototype.render = function () {
       .on('start', dragstarted)
       .on('drag', dragged)
       .on('end', dragended)
-    );
+    )
 
   node.append('title')
-    .text(function(d) { return d.id; });
+    .text(d => d.id)
 
   simulation.nodes(this.graph.nodes)
-    .on('tick', ticked);
+    .on('tick', ticked)
 
   simulation.force('link')
-    .links(this.graph.links);
+    .links(this.graph.links)
 
-  function ticked() {
+  function ticked () {
     link.attr('x1', d => d.source.x)
-			.attr('y1', d => d.source.y)
-			.attr('x2', d => d.target.x)
-			.attr('y2', d => d.target.y);
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y)
 
     node.attr('cx', d => d.x)
-			.attr('cy', d => d.y);
+        .attr('cy', d => d.y)
   }
 
-  function dragstarted(d) {
+  function dragstarted (d) {
     if (!d3.event.active) {
-      simulation.alphaTarget(0.3).restart();
+      simulation.alphaTarget(0.3).restart()
     }
-    d.fx = d.x;
-    d.fy = d.y;
+    d.fx = d.x
+    d.fy = d.y
   }
 
-  function dragged(d) {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
+  function dragged (d) {
+    d.fx = d3.event.x
+    d.fy = d3.event.y
   }
 
-  function dragended(d) {
+  function dragended (d) {
     if (!d3.event.active) {
-      simulation.alphaTarget(0);
+      simulation.alphaTarget(0)
     }
-    d.fx = null;
-    d.fy = null;
+    d.fx = null
+    d.fy = null
   }
-
 }
 
-export default SocialGraphVisualizer;
+export default SocialGraphVisualizer
