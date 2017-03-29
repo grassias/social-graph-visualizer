@@ -9,11 +9,15 @@ function SocialGraphVisualizer (options = {}) {
   if (!this.parentEl) {
     throw new Error('The element you supplied does not exist.')
   }
+
+  this.elWidth = this.parentEl._groups[0][0].clientWidth
+  this.elHeight = this.parentEl._groups[0][0].clientHeight
+
   this.parentEl
     .append('svg')
     // responsive SVG needs these 2 attributes and no width and height attr
     .attr('preserveAspectRatio', 'xMidYMid meet')
-    .attr('viewBox', `0 0 ${this.parentEl._groups[0][0].clientWidth} ${this.parentEl._groups[0][0].clientHeight}`)
+    .attr('viewBox', `0 0 ${this.elWidth} ${this.elHeight}`)
 
   this.svg = d3.select('svg')
 
@@ -22,16 +26,13 @@ function SocialGraphVisualizer (options = {}) {
   }
 
   this.graph = options.graph
+  this.simulation = d3.forceSimulation()
+    .force('link', d3.forceLink().id(d => d.id))
+    .force('charge', d3.forceManyBody())
+    .force('center', d3.forceCenter(this.elWidth / 2, this.elHeight / 2))
 }
 
 SocialGraphVisualizer.prototype.render = function () {
-  var color = d3.scaleOrdinal(d3.schemeCategory20)
-
-  var simulation = d3.forceSimulation()
-    .force('link', d3.forceLink().id(d => d.id))
-    .force('charge', d3.forceManyBody())
-    .force('center', d3.forceCenter(this.svg._groups[0][0].clientWidth / 2, this.svg._groups[0][0].clientHeight / 2))
-
   var link = this.svg
     .append('g')
     .attr('class', 'links')
@@ -42,27 +43,35 @@ SocialGraphVisualizer.prototype.render = function () {
     .attr('stroke-width', d => Math.sqrt(d.value))
 
   var node = this.svg
-    .append('g')
-    .attr('class', 'nodes')
-    .selectAll('circle')
+    .selectAll('.node')
     .data(this.graph.nodes)
     .enter()
-    .append('circle')
-    .attr('r', 5)
-    .attr('fill', d => color(d.group))
+    .append('g')
+    .attr('class', 'node')
     .call(d3.drag()
-      .on('start', dragstarted)
-      .on('drag', dragged)
-      .on('end', dragended)
+      .on('start', dragstarted.bind(this))
+      .on('drag', dragged.bind(this))
+      .on('end', dragended.bind(this))
     )
+    .on('mouseover', mouseover)
+    .on('mouseout', mouseout)
 
-  node.append('title')
+  node.append('image')
+    .attr('xlink:href', d => 'myavatar.ico')
+    .attr('x', -8)
+    .attr('y', -8)
+    .attr('width', 16)
+    .attr('height', 16)
+
+  node.append('text')
+    .attr('dx', 12)
+    .attr('dy', '.35em')
     .text(d => d.id)
 
-  simulation.nodes(this.graph.nodes)
+  this.simulation.nodes(this.graph.nodes)
     .on('tick', ticked)
 
-  simulation.force('link')
+  this.simulation.force('link')
     .links(this.graph.links)
 
   function ticked () {
@@ -71,13 +80,12 @@ SocialGraphVisualizer.prototype.render = function () {
       .attr('x2', d => d.target.x)
       .attr('y2', d => d.target.y)
 
-    node.attr('cx', d => d.x)
-        .attr('cy', d => d.y)
+    node.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')')
   }
 
   function dragstarted (d) {
     if (!d3.event.active) {
-      simulation.alphaTarget(0.3).restart()
+      this.simulation.alphaTarget(0.3).restart()
     }
     d.fx = d.x
     d.fy = d.y
@@ -90,10 +98,23 @@ SocialGraphVisualizer.prototype.render = function () {
 
   function dragended (d) {
     if (!d3.event.active) {
-      simulation.alphaTarget(0)
+      this.simulation.alphaTarget(0)
     }
     d.fx = null
     d.fy = null
+  }
+
+  function mouseover () {
+    d3.select(this)
+      .raise()
+      .attr('width', 32)
+      .attr('height', 32)
+  }
+
+  function mouseout () {
+    d3.select(this)
+      .attr('width', 16)
+      .attr('height', 16)
   }
 }
 
