@@ -32,7 +32,11 @@ function SocialGraphVisualizer (options = {}) {
     .force('center', d3.forceCenter(this.elWidth / 2, this.elHeight / 2))
 }
 
-SocialGraphVisualizer.prototype.render = function () {
+SocialGraphVisualizer.prototype.render = function (options = {
+  nodeDiameter: 20
+}) {
+  const nodeDiameter = options.nodeDiameter
+  console.log(nodeDiameter)
   var link = this.svg
     .append('g')
     .attr('class', 'links')
@@ -57,16 +61,13 @@ SocialGraphVisualizer.prototype.render = function () {
     .on('mouseout', mouseout)
 
   node.append('image')
-    .attr('xlink:href', d => 'myavatar.ico')
-    .attr('x', -8)
-    .attr('y', -8)
-    .attr('width', 16)
-    .attr('height', 16)
-
-  node.append('text')
-    .attr('dx', 12)
-    .attr('dy', '.35em')
-    .text(d => d.id)
+    .attr('xlink:href', d => d.avatar)
+    .attr('x', -nodeDiameter / 2)
+    .attr('y', -nodeDiameter / 2)
+    .attr('width', nodeDiameter)
+    .attr('height', nodeDiameter)
+    .style('display', 'block')
+    .style('border-radius', '50%')
 
   this.simulation.nodes(this.graph.nodes)
     .on('tick', ticked)
@@ -107,14 +108,16 @@ SocialGraphVisualizer.prototype.render = function () {
   function mouseover () {
     d3.select(this)
       .raise()
-      .attr('width', 32)
-      .attr('height', 32)
+      .append('text')
+      .attr('dx', 12)
+      .attr('dy', '.35em')
+      .text(d => d.id)
   }
 
   function mouseout () {
     d3.select(this)
-      .attr('width', 16)
-      .attr('height', 16)
+      .select('text')
+      .remove()
   }
 }
 
