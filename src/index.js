@@ -64,8 +64,10 @@ SocialGraphVisualizer.prototype.render = function (options = {
     .attr('xlink:href', d => d.avatar)
     .attr('x', -nodeDiameter / 2)
     .attr('y', -nodeDiameter / 2)
-    .attr('width', nodeDiameter)
-    .attr('height', nodeDiameter)
+    .style('width', nodeDiameter)
+    .style('height', nodeDiameter)
+    .style('min-width', nodeDiameter)
+    .style('min-height', nodeDiameter)
     .style('display', 'block')
     .style('border-radius', '50%')
 
