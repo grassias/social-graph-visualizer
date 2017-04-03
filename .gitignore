@@ -4,3 +4,4 @@ dist
 lib
 es
 *.log
+.DS_Store
